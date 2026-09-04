@@ -6,3 +6,6 @@ Thumbs.db
 
 # PHP
 *.log
+#Contexto
+.CLAUDE.md
+.agent_docs/*
