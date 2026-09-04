@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Mapa da Trilha DEV</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --ink:#2C2A29; --ink-soft:#53565A;
+  --paper:#E0EBE7; --surface:#FFFFFF; --surface-2:#EEF5F1;
+  --border:#CFE0D7;
+  --verde:#128037; --azul:#4067DB; --magenta:#B33D9E; --gate:#B45309;
+  --link:#3457C4; --shadow: 0 2px 4px rgba(19,41,26,.09), 0 10px 22px rgba(19,41,26,.10);
+}
+*{box-sizing:border-box;}
+body{
+  background:var(--paper); color:var(--ink); margin:0;
+  font-family:'Montserrat', system-ui, -apple-system, sans-serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{ font-family:'Montserrat', system-ui, sans-serif; font-weight:700; text-wrap:balance; margin:0; letter-spacing:-0.01em;}
+a{ color:var(--link); font-weight:600; }
+.wrap{ max-width:1120px; margin:0 auto; padding:0 24px 96px; }
+.tabular{ font-variant-numeric:tabular-nums; }
+
+/* ---------- header ---------- */
+header.page-head{ padding:44px 0 32px; border-bottom:1px solid var(--border); }
+header.page-head::before{
+  content:""; display:block; height:6px; width:112px; border-radius:4px; margin-bottom:26px;
+  background:linear-gradient(100deg, var(--verde), var(--azul) 52%, var(--magenta));
+}
+.eyebrow{
+  font-size:12.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--verde); margin:0 0 14px;
+}
+header.page-head h1{ font-size:clamp(34px,4.6vw,48px); font-weight:800; color:var(--ink); }
+
+/* ---------- map section ---------- */
+section.map{ padding:48px 0 12px; }
+section.map h2{ font-size:26px; }
+.map-caption{ color:var(--ink-soft); max-width:66ch; margin:10px 0 22px; font-size:15px; }
+
+.legend{ display:flex; flex-wrap:wrap; gap:18px; align-items:center; margin:0 0 24px; font-size:13px; font-weight:500; color:var(--ink-soft); }
+.legend-item{ display:inline-flex; align-items:center; gap:7px; }
+.shape-circle{ width:12px; height:12px; border-radius:50%; background:var(--ink-soft); display:inline-block; flex:none; }
+.shape-hex{ width:14px; height:14px; background:var(--gate); flex:none; display:inline-block;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); }
+.swatch{ width:14px; height:14px; border-radius:4px; display:inline-block; flex:none; }
+.swatch.f1{ background:var(--verde); } .swatch.f2{ background:var(--azul); } .swatch.f3{ background:var(--magenta); }
+
+.map-columns{ display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start; }
+.fase-col{ flex:1 1 280px; min-width:0; border:1px solid var(--border); border-radius:22px 22px 22px 4px;
+  padding:20px 18px 18px; background:var(--surface); position:relative; box-shadow:var(--shadow); }
+.fase-col::before{ content:""; position:absolute; inset:0 auto 0 0; width:6px; border-radius:22px 0 0 4px; }
+.fase-col.f1::before{ background:var(--verde); } .fase-col.f2::before{ background:var(--azul); } .fase-col.f3::before{ background:var(--magenta); }
+
+.fase-col-head{ margin-bottom:18px; }
+.fase-col-head .fase-num{ font-size:11.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:4px 11px; border-radius:20px; color:#fff; display:inline-block; }
+.fase-col.f1 .fase-num{ background:var(--verde); } .fase-col.f2 .fase-num{ background:var(--azul); } .fase-col.f3 .fase-num{ background:var(--magenta); }
+.fase-col-head h3{ font-size:17px; margin-top:10px; }
+.fase-col-head .fase-weeks{ display:block; font-size:11.5px; font-weight:600; color:var(--ink-soft); margin-top:4px; }
+
+.col-arrow{ display:none; align-items:center; justify-content:center; color:var(--azul); font-size:22px; font-weight:700; align-self:center; }
+@media (min-width:860px){ .col-arrow{ display:flex; } }
+
+.modulo-group{ margin-bottom:18px; }
+.modulo-group:last-child{ margin-bottom:0; }
+.modulo-label{ font-size:12.5px; color:var(--ink-soft); font-weight:700; margin:0 0 9px; }
+
+.node-flow-v{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; align-items:stretch; gap:3px; }
+.node-flow-v .arrow-d{ align-self:center; color:var(--ink-soft); font-size:14px; line-height:1.4; font-weight:700; }
+.node{ display:flex; flex-direction:column; gap:6px; width:100%; text-decoration:none; color:var(--ink);
+  background:var(--surface-2); border:1px solid var(--border); border-radius:10px 10px 10px 3px; padding:9px 11px 10px;
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+.node:hover{ transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--azul); }
+.node-top{ display:flex; align-items:center; gap:6px; }
+.node-tag{ font-size:10.5px; font-weight:700; letter-spacing:.03em; padding:2px 7px; border-radius:6px; }
+.node.mc .node-tag{ color:var(--ink-soft); background:var(--paper); }
+.node.gate .node-tag{ color:#fff; background:var(--gate); }
+.node-title{ font-size:12.8px; line-height:1.3; font-weight:600; }
+.node-weeks{ font-size:11px; font-weight:600; color:var(--ink-soft); }
+
+/* ---------- detail section ---------- */
+section.detail{ padding:52px 0 0; border-top:1px solid var(--border); margin-top:44px; }
+section.detail > h2{ font-size:26px; margin-bottom:8px;}
+section.detail > .map-caption{ margin-bottom:34px; }
+
+article.item{ padding:26px 0; border-bottom:1px solid var(--border); scroll-margin-top:20px; }
+article.item:last-child{ border-bottom:none; }
+.item-eyebrow{ font-size:12px; font-weight:700; color:var(--ink-soft); margin:0 0 6px; text-transform:uppercase; letter-spacing:.05em;}
+article.item h3{ font-size:19px; display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; }
+article.item.gate h3{ color:var(--gate); }
+.item-weeks{ font-size:12.5px; font-weight:600; color:var(--ink-soft); border:1px solid var(--border); background:var(--surface-2); border-radius:20px; padding:3px 11px; }
+.item-body{ display:grid; grid-template-columns:minmax(0,1fr); gap:14px; margin-top:16px; }
+@media (min-width:760px){ .item-body{ grid-template-columns: 1.1fr 1fr; } .item-body .field.materiais{ grid-column:1 / -1; } }
+.field-label{ display:block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--verde); margin-bottom:5px; }
+.field p{ margin:0; color:var(--ink-soft); font-size:14.5px; }
+.field em{ color:var(--ink-soft); font-style:italic; }
+ul.resources{ list-style:none; margin:0; padding:0; display:grid; gap:7px; }
+@media (min-width:600px){ ul.resources{ grid-template-columns:1fr 1fr; } }
+ul.resources li{ font-size:13.5px; border:1px solid var(--border); border-radius:8px; padding:8px 10px; background:var(--surface-2); }
+ul.resources a{ font-weight:700; text-decoration:none; }
+ul.resources a:hover{ text-decoration:underline; }
+.res-meta{ display:block; color:var(--ink-soft); font-size:11.5px; font-weight:500; margin-top:2px; }
+
+footer{ padding:36px 0 4px; color:var(--ink-soft); font-size:13px; max-width:70ch; }
+footer strong{ color:var(--ink); }
+
+@media (max-width:520px){
+  .fase-col{ padding:16px 14px 14px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="page-head">
+  <p class="eyebrow">Positivo S+ · Programa Trainee</p>
+  <h1>Trilha DEV</h1>
+</header>
+
+<section class="map" aria-labelledby="map-title">
+  <h2 id="map-title">O mapa</h2>
+  <p class="map-caption">As três fases lado a lado, da esquerda para a direita. Dentro de cada fase, os itens seguem de cima para baixo. Círculos são microcursos que o trainee estuda por conta própria com material gratuito da internet; hexágonos são gates — projetos avaliados por Wesley ou George que bloqueiam o avanço até serem aprovados. Clique em qualquer item para ver o conteúdo completo abaixo.</p>
+
+  <div class="legend">
+    <span class="legend-item"><span class="shape-circle"></span> Microcurso</span>
+    <span class="legend-item"><span class="shape-hex"></span> Gate (checkpoint)</span>
+    <span class="legend-item"><span class="swatch f1"></span> Fase 1</span>
+    <span class="legend-item"><span class="swatch f2"></span> Fase 2</span>
+    <span class="legend-item"><span class="swatch f3"></span> Fase 3</span>
+  </div>
+
+  <div class="map-columns">
+
+    <div class="fase-col f1" id="fase-1">
+      <div class="fase-col-head">
+        <span class="fase-num">Fase 1</span>
+        <h3>Introdução Prática</h3>
+        <span class="fase-weeks">Semanas 01–08</span>
+      </div>
+      <div class="modulo-group">
+        <p class="modulo-label">Módulo 1 — Primeiros Passos</p>
+        <ol class="node-flow-v">
+          <li><a class="node mc" href="#mc1"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC1</span></span><span class="node-title">Terminal, Dev &amp; Git essencial</span><span class="node-weeks">Sem 01–02</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc2"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC2</span></span><span class="node-title">Lógica de programação I</span><span class="node-weeks">Sem 03–04</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc3"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC3</span></span><span class="node-title">Lógica de programação II</span><span class="node-weeks">Sem 05–06</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc4"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC4</span></span><span class="node-title">Laboratório introdutório</span><span class="node-weeks">Sem 07</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node gate" href="#gate1"><span class="node-top"><span class="shape-hex"></span><span class="node-tag">Gate 1</span></span><span class="node-title">Calculadora de console completa</span><span class="node-weeks">Sem 08</span></a></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="col-arrow" aria-hidden="true">→</div>
+
+    <div class="fase-col f2" id="fase-2">
+      <div class="fase-col-head">
+        <span class="fase-num">Fase 2</span>
+        <h3>Fundamentos Básicos</h3>
+        <span class="fase-weeks">Semanas 09–19</span>
+      </div>
+      <div class="modulo-group">
+        <p class="modulo-label">Módulo 2 — Estruturas de Dados e Funções</p>
+        <ol class="node-flow-v">
+          <li><a class="node mc" href="#mc5"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC5</span></span><span class="node-title">Funções, parâmetros e escopo</span><span class="node-weeks">Sem 09</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc6"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC6</span></span><span class="node-title">Arrays e estruturas de dados</span><span class="node-weeks">Sem 10–11</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node gate" href="#gate2"><span class="node-top"><span class="shape-hex"></span><span class="node-tag">Gate 2</span></span><span class="node-title">Lista de tarefas com persistência</span><span class="node-weeks">Sem 12</span></a></li>
+        </ol>
+      </div>
+      <div class="modulo-group">
+        <p class="modulo-label">Módulo 3 — POO e Qualidade (tema ITSM/GLPI)</p>
+        <ol class="node-flow-v">
+          <li><a class="node mc" href="#mc7"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC7</span></span><span class="node-title">POO em PHP</span><span class="node-weeks">Sem 13–15</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc8"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC8</span></span><span class="node-title">Boas práticas e PSR</span><span class="node-weeks">Sem 16–17</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node gate" href="#gate3"><span class="node-top"><span class="shape-hex"></span><span class="node-tag">Gate 3</span></span><span class="node-title">Mini-sistema de abertura de chamados</span><span class="node-weeks">Sem 18–19</span></a></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="col-arrow" aria-hidden="true">→</div>
+
+    <div class="fase-col f3" id="fase-3">
+      <div class="fase-col-head">
+        <span class="fase-num">Fase 3</span>
+        <h3>Fundamentos Específicos</h3>
+        <span class="fase-weeks">Semanas 20–43</span>
+      </div>
+      <div class="modulo-group">
+        <p class="modulo-label">Módulo 4 — Banco de Dados</p>
+        <ol class="node-flow-v">
+          <li><a class="node mc" href="#mc9"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC9</span></span><span class="node-title">Modelagem relacional e SGBDs</span><span class="node-weeks">Sem 20–21</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc10"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC10</span></span><span class="node-title">SQL na prática</span><span class="node-weeks">Sem 22–23</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc11"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC11</span></span><span class="node-title">CRUD via PDO</span><span class="node-weeks">Sem 24–25</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node gate" href="#gate4"><span class="node-top"><span class="shape-hex"></span><span class="node-tag">Gate 4</span></span><span class="node-title">CLI com persistência real em MySQL</span><span class="node-weeks">Sem 26–27</span></a></li>
+        </ol>
+      </div>
+      <div class="modulo-group">
+        <p class="modulo-label">Módulo 5 — Laravel e APIs</p>
+        <ol class="node-flow-v">
+          <li><a class="node mc" href="#mc12"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC12</span></span><span class="node-title">Laravel essencial</span><span class="node-weeks">Sem 28–29</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc13"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC13</span></span><span class="node-title">Migrations e Eloquent</span><span class="node-weeks">Sem 30–31</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc14"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC14</span></span><span class="node-title">APIs</span><span class="node-weeks">Sem 32–34</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node gate" href="#gate5"><span class="node-top"><span class="shape-hex"></span><span class="node-tag">Gate 5</span></span><span class="node-title">Aplicação Laravel completa com API própria</span><span class="node-weeks">Sem 35–36</span></a></li>
+        </ol>
+      </div>
+      <div class="modulo-group">
+        <p class="modulo-label">Módulo 6 — Qualidade, Versionamento e Operação</p>
+        <ol class="node-flow-v">
+          <li><a class="node mc" href="#mc15"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC15</span></span><span class="node-title">Testes (PHPUnit) e debugging</span><span class="node-weeks">Sem 37–38</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node mc" href="#mc16"><span class="node-top"><span class="shape-circle"></span><span class="node-tag">MC16</span></span><span class="node-title">Git em equipe + deploy</span><span class="node-weeks">Sem 39–40</span></a></li>
+          <li class="arrow-d" aria-hidden="true">↓</li>
+          <li><a class="node gate" href="#gate6"><span class="node-top"><span class="shape-hex"></span><span class="node-tag">Gate 6</span></span><span class="node-title">Projeto de fechamento (capstone)</span><span class="node-weeks">Sem 41–43</span></a></li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="detail">
+  <h2>Trilha em detalhe</h2>
+  <p class="map-caption">Conteúdo, exercícios de validação e materiais gratuitos de cada item — na mesma ordem do mapa acima.</p>
+
+  <article class="item mc" id="mc1">
+    <p class="item-eyebrow">Fase 1 · Módulo 1 — Primeiros Passos</p>
+    <h3>MC1 — Terminal, Ambiente de Dev e Git essencial <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Conteúdo</span><p>Linux/terminal básico (pwd, ls, cd, mkdir, touch, rm, cp, mv, cat), redirecionamento e pipes (<code>&gt;</code>, <code>&gt;&gt;</code>, <code>|</code>), permissões (chmod), variáveis de ambiente; instalação PHP + Composer + VS Code; Git/GitHub básico (init, add, commit, clone, push, pull, branch, Pull Request). <em>Resolução de conflito de merge fica no MC16.</em></p></div>
+      <div class="field"><span class="field-label">Exercícios</span><p>Replicar árvore de pastas via terminal; criar/mover/renomear/apagar arquivos via linha de comando; 3+ combinações de pipe/redirecionamento; instalar PHP/Composer e rodar "Hello World" via terminal; repositório Git com 5+ commits atômicos; branch + Pull Request.</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://www.cursoemvideo.com/curso/curso-de-git-e-github/" target="_blank" rel="noopener">Curso de Git e GitHub — Curso em Vídeo</a><span class="res-meta">vídeo · 20h · PT-BR</span></li>
+          <li><a href="https://cursa.com.br/curso-de-linux-primeiros-passos-por-curso-em-v%C3%ADdeo/41" target="_blank" rel="noopener">Curso de Linux — Primeiros Passos</a><span class="res-meta">vídeo · 6h45 · PT-BR</span></li>
+          <li><a href="https://www.freecodecamp.org/portuguese/news/o-manual-de-comandos-do-linux-aprenda-comandos-do-linux-para-iniciantes/" target="_blank" rel="noopener">O Manual de Comandos do Linux — freeCodeCamp</a><span class="res-meta">texto · PT-BR</span></li>
+          <li><a href="https://www.php.net/downloads.php" target="_blank" rel="noopener">Instalação oficial — PHP / Composer / VS Code</a><span class="res-meta">documentação · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc2">
+    <p class="item-eyebrow">Fase 1 · Módulo 1 — Primeiros Passos</p>
+    <h3>MC2 — Lógica de programação I <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Conteúdo</span><p>Variáveis, tipos de dados, operadores e expressões.</p></div>
+      <div class="field"><span class="field-label">Exercícios</span><p>Lista de 15–20 exercícios (Bhaskara, conversor de unidades, médias) em PHP puro via terminal. <em>Pendência: publicar essa lista num repositório Git próprio.</em></p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://www.cursoemvideo.com/curso/curso-de-php-moderno-modulo-01/" target="_blank" rel="noopener">Curso de PHP Moderno: Módulo 1</a><span class="res-meta">vídeo · PT-BR</span></li>
+          <li><a href="https://www.freecodecamp.org/portuguese/news/o-manual-do-php-guia-para-iniciantes-em-php/" target="_blank" rel="noopener">O Manual do PHP — freeCodeCamp</a><span class="res-meta">texto · PT-BR</span></li>
+          <li><a href="https://www.php.net/manual/en/language.types.php" target="_blank" rel="noopener">PHP Manual — Types / Operators</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://judge.beecrowd.com/" target="_blank" rel="noopener">beecrowd (categoria Iniciante)</a><span class="res-meta">interativo · PT-BR</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc3">
+    <p class="item-eyebrow">Fase 1 · Módulo 1 — Primeiros Passos</p>
+    <h3>MC3 — Lógica de programação II <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Conteúdo</span><p>Estruturas condicionais (if/else, switch) e laços de repetição (for, while, do-while).</p></div>
+      <div class="field"><span class="field-label">Exercícios</span><p>Lista de 15–20 exercícios (fizzbuzz, tabuada, validador de CPF simplificado, pirâmide de números) + 3 desafio (Fibonacci iterativo, jogo de adivinhação).</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://www.freecodecamp.org/portuguese/news/o-manual-do-php-guia-para-iniciantes-em-php/" target="_blank" rel="noopener">O Manual do PHP (condicionais/laços)</a><span class="res-meta">texto · PT-BR</span></li>
+          <li><a href="https://www.php.net/manual/en/language.control-structures.php" target="_blank" rel="noopener">PHP Manual — Control Structures</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://debxp.org/validando-cpf-do-algoritmo-ao-codigo-php-python-js/" target="_blank" rel="noopener">Validando CPF — algoritmo + código PHP</a><span class="res-meta">texto · PT-BR</span></li>
+          <li><a href="https://roadmap.sh/php/projects" target="_blank" rel="noopener">roadmap.sh — PHP Projects (jogo de adivinhação)</a><span class="res-meta">lista · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc4">
+    <p class="item-eyebrow">Fase 1 · Módulo 1 — Primeiros Passos</p>
+    <h3>MC4 — Laboratório introdutório <span class="item-weeks">1 semana</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Exercício</span><p>Miniprojeto CLI em PHP puro (jogo da forca ou conversor de temperatura). IA usada só como tutora/explicadora, não geradora de código.</p></div>
+      <div class="field materiais"><span class="field-label">Ideias de projeto</span>
+        <ul class="resources">
+          <li><a href="https://roadmap.sh/php/projects" target="_blank" rel="noopener">roadmap.sh — PHP Projects</a><span class="res-meta">lista · inglês</span></li>
+          <li><a href="https://www.computersciencemaster.com.br/jogo-da-forca-em-php/" target="_blank" rel="noopener">Jogo da Forca em PHP</a><span class="res-meta">texto · PT-BR</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item gate" id="gate1">
+    <p class="item-eyebrow">Fase 1 · Módulo 1 · Gate</p>
+    <h3>Gate 1 — Calculadora de console completa <span class="item-weeks">1 semana</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Entrega</span><p>CLI em PHP puro com input do usuário, 3+ condicionais e 2+ laços diferentes, histórico de commits real, README.</p></div>
+      <div class="field"><span class="field-label">Critérios de aceite</span><p>Roda sem erro; variáveis legíveis; commits mostram evolução (não um só "commit final"); trainee explica cada trecho do próprio código.</p></div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc5">
+    <p class="item-eyebrow">Fase 2 · Módulo 2 — Estruturas de Dados e Funções</p>
+    <h3>MC5 — Funções, parâmetros e escopo <span class="item-weeks">1 semana</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Exercícios</span><p>Refatorar exercícios do MC2/MC3 extraindo funções; função de validação de senha; recursão simples (fatorial, Fibonacci).</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://www.php.net/manual/en/language.functions.php" target="_blank" rel="noopener">PHP Manual — Functions / Variable scope</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://www.rocketseat.com.br/blog/artigos/post/problemas-classicos-logica-php-como-resolver" target="_blank" rel="noopener">Problemas clássicos de lógica com PHP — Rocketseat</a><span class="res-meta">texto · PT-BR</span></li>
+          <li><a href="https://exercism.org/tracks/php" target="_blank" rel="noopener">Exercism — PHP Track</a><span class="res-meta">interativo + mentoria · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc6">
+    <p class="item-eyebrow">Fase 2 · Módulo 2 — Estruturas de Dados e Funções</p>
+    <h3>MC6 — Arrays e estruturas de dados <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Exercícios</span><p>Ordenar/filtrar/buscar em arrays na mão e depois com funções nativas (array_filter, array_map, usort); implementar pilha e fila manualmente.</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://www.php.net/manual/en/ref.array.php" target="_blank" rel="noopener">PHP Manual — Array Functions</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://codamos.com.br/guia-arrays-no-php/" target="_blank" rel="noopener">Guia definitivo de arrays no PHP — Codamos</a><span class="res-meta">texto · PT-BR</span></li>
+          <li><a href="https://www.codewars.com/kata/search/php" target="_blank" rel="noopener">Codewars — PHP kata (8kyu/7kyu)</a><span class="res-meta">interativo · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item gate" id="gate2">
+    <p class="item-eyebrow">Fase 2 · Módulo 2 · Gate</p>
+    <h3>Gate 2 — Lista de tarefas com persistência <span class="item-weeks">1 semana</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Entrega</span><p>Lista de tarefas via terminal com persistência em arquivo/JSON.</p></div>
+      <div class="field"><span class="field-label">Critérios de aceite</span><p>Código modularizado em funções; 2+ estruturas de dados usadas de forma adequada; tratamento de erro básico.</p></div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc7">
+    <p class="item-eyebrow">Fase 2 · Módulo 3 — POO e Qualidade (tema ITSM/GLPI)</p>
+    <h3>MC7 — POO em PHP <span class="item-weeks">3 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Conteúdo</span><p>Classes, objetos, herança, encapsulamento. <em>Aplicado a um domínio de ITSM/GLPI (Chamado, Fila, Usuário/Técnico, Grupo) — os materiais abaixo são de POO genérica; a contextualização GLPI é adaptação nossa.</em></p></div>
+      <div class="field"><span class="field-label">Exercícios</span><p>Classe abstrata "Chamado" com subclasses "Incidente"/"Requisição" (herança); classe "Fila" gerenciando uma coleção de chamados; "GrupoDeUsuarios"/"Tecnico" com encapsulamento; simular ciclo de status (aberto → em atendimento → resolvido → fechado).</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://www.cursoemvideo.com/curso/php-poo/" target="_blank" rel="noopener">Curso em Vídeo — PHP POO [40h]</a><span class="res-meta">vídeo · PT-BR</span></li>
+          <li><a href="https://www.php.net/manual/en/language.oop5.php" target="_blank" rel="noopener">PHP Manual — Classes and Objects</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://www.phptutorial.net/php-oop/" target="_blank" rel="noopener">PHP Tutorial — PHP OOP</a><span class="res-meta">texto · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc8">
+    <p class="item-eyebrow">Fase 2 · Módulo 3 — POO e Qualidade (tema ITSM/GLPI)</p>
+    <h3>MC8 — Boas práticas e PSR <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Exercícios</span><p>Rodar PHP_CodeSniffer (PSR-12) no código do MC7 e corrigir tudo; revisão via IA comparando sugestões com o padrão PSR.</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://www.php-fig.org/psr/psr-12/" target="_blank" rel="noopener">PSR-12: Extended Coding Style</a><span class="res-meta">documentação oficial · inglês</span></li>
+          <li><a href="http://br.phptherightway.com/" target="_blank" rel="noopener">PHP: The Right Way (tradução PT-BR)</a><span class="res-meta">texto · PT-BR</span></li>
+          <li><a href="https://www.rocketseat.com.br/blog/artigos/post/ia-revisar-codigo-prompts-code-review" target="_blank" rel="noopener">Como usar IA para revisar seu próprio código</a><span class="res-meta">texto · PT-BR</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item gate" id="gate3">
+    <p class="item-eyebrow">Fase 2 · Módulo 3 · Gate</p>
+    <h3>Gate 3 — Mini-sistema de abertura de chamados (ITSM) <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Entrega</span><p>Sistema com Chamado (+ subtipos via herança), Fila, Usuario, GrupoUsuario, Tecnico; abrir chamado, atribuir a técnico/fila, mudar status, listar por fila/grupo; diagrama de classes.</p></div>
+      <div class="field"><span class="field-label">Critérios de aceite</span><p>Linter PSR-12 limpo; diagrama bate com o código; mentor tenta "quebrar" o sistema com input estranho.</p></div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc9">
+    <p class="item-eyebrow">Fase 3 · Módulo 4 — Banco de Dados</p>
+    <h3>MC9 — Modelagem relacional e SGBDs <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Conteúdo</span><p>DER, normalização básica, MySQL x PostgreSQL (conceitos e diferenças).</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://www.freecodecamp.org/news/learn-relational-database-design/" target="_blank" rel="noopener">Relational Database Design — freeCodeCamp</a><span class="res-meta">vídeo · 6h · inglês</span></li>
+          <li><a href="https://www.dio.me/articles/mysql-ou-postgresql-qual-banco-de-dados-relacional-escolher" target="_blank" rel="noopener">MySQL ou PostgreSQL? — DIO</a><span class="res-meta">texto · PT-BR</span></li>
+          <li><a href="https://www.bytebase.com/blog/postgres-vs-mysql/" target="_blank" rel="noopener">PostgreSQL vs MySQL: Which to Choose in 2026?</a><span class="res-meta">texto · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc10">
+    <p class="item-eyebrow">Fase 3 · Módulo 4 — Banco de Dados</p>
+    <h3>MC10 — SQL na prática <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Exercícios</span><p>Bateria de 10+ queries (SELECT, JOIN, GROUP BY/HAVING, subqueries) sobre banco de exemplo (Sakila).</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://sqlzoo.net/" target="_blank" rel="noopener">SQLZoo</a><span class="res-meta">interativo · inglês</span></li>
+          <li><a href="https://dev.mysql.com/doc/sakila/en/sakila-usage.html" target="_blank" rel="noopener">MySQL Sakila Sample Database</a><span class="res-meta">dataset oficial · inglês</span></li>
+          <li><a href="https://www.freecodecamp.org/news/sql-and-databases-full-course/" target="_blank" rel="noopener">SQL and Databases – Full Course for Beginners</a><span class="res-meta">vídeo · 4h · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc11">
+    <p class="item-eyebrow">Fase 3 · Módulo 4 — Banco de Dados</p>
+    <h3>MC11 — CRUD via PDO com prepared statements <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Conteúdo</span><p>Conexão PHP+MySQL via PDO, prepared statements, prevenção de SQL injection, CRUD completo. <em>Sem Migrations/Eloquent — isso fica no Módulo 5.</em></p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://www.php.net/manual/en/book.pdo.php" target="_blank" rel="noopener">PHP Manual — PDO</a><span class="res-meta">documentação oficial · inglês</span></li>
+          <li><a href="https://www.phptutorial.net/php-pdo/" target="_blank" rel="noopener">PHP PDO Tutorial</a><span class="res-meta">texto · inglês</span></li>
+          <li><a href="https://www.rocketseat.com.br/blog/artigos/post/sql-injection-php-pdo-prepared-statements" target="_blank" rel="noopener">SQL injection em PHP: como se proteger</a><span class="res-meta">texto · PT-BR</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item gate" id="gate4">
+    <p class="item-eyebrow">Fase 3 · Módulo 4 · Gate</p>
+    <h3>Gate 4 — CLI com persistência real em MySQL <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Entrega</span><p>DER modelado, script SQL de criação, CRUD completo via PDO.</p></div>
+      <div class="field"><span class="field-label">Critérios de aceite</span><p>Banco normalizado; zero SQL injection (prepared statements); roda do zero seguindo o README.</p></div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc12">
+    <p class="item-eyebrow">Fase 3 · Módulo 5 — Laravel e APIs</p>
+    <h3>MC12 — Laravel essencial <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Conteúdo</span><p>MVC, rotas, controllers, Views com Blade.</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://laravel.com/docs/13.x/routing" target="_blank" rel="noopener">Documentação oficial — Routing / Controllers / Blade</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://laravel.com/learn" target="_blank" rel="noopener">Laravel Bootcamp (oficial)</a><span class="res-meta">vídeo/interativo · inglês</span></li>
+          <li><a href="https://www.youtube.com/playlist?list=PLmY5AEiqDWwB29FbhTfTh86Zr0yjeFBwO" target="_blank" rel="noopener">Curso gratuito de Laravel 12 — Celke</a><span class="res-meta">vídeo · 35 aulas · PT-BR</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc13">
+    <p class="item-eyebrow">Fase 3 · Módulo 5 — Laravel e APIs</p>
+    <h3>MC13 — Migrations e Eloquent na prática <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Conteúdo</span><p>Migrations, Eloquent (models, hasMany/belongsTo), Form Requests. Exercício-chave: refazer o CRUD do Gate 4 com Eloquent e comparar com a versão PDO manual.</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://laravel.com/docs/13.x/migrations" target="_blank" rel="noopener">Documentação oficial — Migrations / Eloquent / Form Requests</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://www.youtube.com/playlist?list=PLmY5AEiqDWwB29FbhTfTh86Zr0yjeFBwO" target="_blank" rel="noopener">Curso gratuito de Laravel 12 — Celke (parte Eloquent/Migrations)</a><span class="res-meta">vídeo · PT-BR</span></li>
+        </ul>
+        <p style="margin-top:8px;"><em>Só 2 recursos aqui — sinalizado como ponto para reforçar depois, se necessário.</em></p>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc14">
+    <p class="item-eyebrow">Fase 3 · Módulo 5 — Laravel e APIs</p>
+    <h3>MC14 — APIs <span class="item-weeks">3 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Conteúdo</span><p>REST (verbos HTTP, status codes, JSON), consumo de APIs externas, construção de endpoints com Laravel, autenticação (tokens, JWT).</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Guides/Overview" target="_blank" rel="noopener">MDN — HTTP Overview (pt-BR)</a><span class="res-meta">documentação · PT-BR</span></li>
+          <li><a href="https://laravel.com/docs/13.x/http-client" target="_blank" rel="noopener">Documentação oficial — HTTP Client</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://laravel.com/docs/13.x/sanctum" target="_blank" rel="noopener">Documentação oficial — Sanctum</a><span class="res-meta">documentação · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item gate" id="gate5">
+    <p class="item-eyebrow">Fase 3 · Módulo 5 · Gate</p>
+    <h3>Gate 5 — Aplicação Laravel completa com API própria <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Entrega</span><p>CRUD web funcional + API própria autenticada + consumo de API externa.</p></div>
+      <div class="field"><span class="field-label">Critérios de aceite</span><p>Endpoints testáveis via Postman/Insomnia; autenticação funcionando; lógica de negócio fora da view.</p></div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc15">
+    <p class="item-eyebrow">Fase 3 · Módulo 6 — Qualidade, Versionamento e Operação</p>
+    <h3>MC15 — Testes automatizados (PHPUnit) e debugging <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://laravel.com/docs/13.x/testing" target="_blank" rel="noopener">Documentação oficial — Testing / Error Handling</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://docs.phpunit.de/en/12.5/" target="_blank" rel="noopener">PHPUnit — Documentação oficial</a><span class="res-meta">documentação · inglês</span></li>
+          <li><a href="https://xdebug.org/docs/install" target="_blank" rel="noopener">Xdebug — Instalação e Step Debugging</a><span class="res-meta">documentação · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item mc" id="mc16">
+    <p class="item-eyebrow">Fase 3 · Módulo 6 — Qualidade, Versionamento e Operação</p>
+    <h3>MC16 — Git em fluxo de equipe + deploy/ambientes <span class="item-weeks">2 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Exercícios</span><p>Branch por feature, PR com template, <strong>resolução de conflito de merge real</strong> (movido do MC1 para cá), configurar <code>.env</code> por ambiente, documentar deploy.</p></div>
+      <div class="field materiais"><span class="field-label">Materiais gratuitos</span>
+        <ul class="resources">
+          <li><a href="https://git-scm.com/book/pt-br/v2" target="_blank" rel="noopener">Pro Git (livro oficial, tradução PT-BR)</a><span class="res-meta">livro · PT-BR</span></li>
+          <li><a href="https://www.atlassian.com/br/git/tutorials/comparing-workflows" target="_blank" rel="noopener">Atlassian Git Tutorials (PT-BR)</a><span class="res-meta">texto · PT-BR</span></li>
+          <li><a href="https://github.com/skills/resolve-merge-conflicts" target="_blank" rel="noopener">GitHub Skills — "Resolve merge conflicts"</a><span class="res-meta">interativo · ~30min · inglês</span></li>
+          <li><a href="https://laravel.com/docs/13.x/configuration" target="_blank" rel="noopener">Documentação oficial — Configuration / Deployment</a><span class="res-meta">documentação · inglês</span></li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <article class="item gate" id="gate6">
+    <p class="item-eyebrow">Fase 3 · Módulo 6 · Gate</p>
+    <h3>Gate 6 — Projeto de fechamento da trilha (capstone) <span class="item-weeks">3 semanas</span></h3>
+    <div class="item-body">
+      <div class="field"><span class="field-label">Entrega</span><p>Evolução do Gate 5 com suíte de testes automatizados (cobertura mínima a definir, ex.: 60–70% das classes de negócio), Git com histórico de branches/PRs, README completo.</p></div>
+      <div class="field"><span class="field-label">Critérios de aceite</span><p><code>php artisan test</code> passa 100%; app sobe só com o README; defesa oral curta do projeto pro mentor, simulando um code review real.</p></div>
+    </div>
+  </article>
+
+</section>
+
+<footer>
+  <p><strong>Formato:</strong> autoestudo com material 100% gratuito. Wesley e George (devs sênior) ficam disponíveis para dúvidas e para validar os gates — não ministram aula. <strong>Reprovação em gate:</strong> feedback específico por escrito + 1 semana extra para corrigir e reapresentar, sem número máximo de tentativas por enquanto. <strong>Stack de referência (set/2026):</strong> PHP 8.3+ (ref. 8.5), MySQL 8.4/9.7 LTS, Laravel 12/13, PSR-12, PHPUnit.</p>
+</footer>
+
+</div>
+</body>
+</html>
