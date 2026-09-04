@@ -6,6 +6,8 @@ Trainee.md` do vault — este repositório existe porque os exercícios de lógi
 de programação precisavam de um lugar versionado, navegável e com histórico
 de commits real (o próprio ato de commitar aqui já é prática do MC1).
 
+## https://claude.ai/code/artifact/4505cc19-d92b-41c3-a8f4-4d6055c9ac56
+
 ## Escopo atual
 
 Por enquanto o repositório cobre apenas o **Módulo 1 — Primeiros Passos**:
