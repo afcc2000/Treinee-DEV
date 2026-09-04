@@ -1,0 +1,8 @@
+# SO / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# PHP
+*.log
